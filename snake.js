@@ -20,7 +20,7 @@ function initGame() {
     running = true;
     paused = false;
     score = 0;
-    speed = 80; // set speed here
+    speed = 50; // set speed here
     placeFood();
     scoreDisplay.textContent = "Score: 0";
     restartBtn.style.display = 'none';
