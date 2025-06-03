@@ -2,19 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Snake Game (Python via PyScript)</title>
-    <meta name="viewport" content="width=400, initial-scale=1">
-    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <title>Snake Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { background: #181818; color: #fff; text-align: center; }
-        canvas { background: #222; margin-top: 30px; border: 3px solid #6aff6a; }
+        body {
+            background: #181818;
+            color: #fff;
+            text-align: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        h1 { margin-top: 30px; }
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            background: #222;
+            border: 3px solid #68ef68;
+            margin: 20px auto;
+            display: block;
+        }
+        #score {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        #restartBtn {
+            display: none;
+            margin: 10px auto;
+            background: #68ef68;
+            color: #222;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 18px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #restartBtn:hover {
+            background: #32d232;
+        }
+        @media (max-width: 500px) {
+            canvas { width: 95vw !important; height: 95vw !important; }
+        }
     </style>
 </head>
 <body>
-    <h1>Snake Game (Python!)</h1>
-    <canvas id="game" width="400" height="400"></canvas>
-    <py-script src="snake.py"></py-script>
-    <p>Use Arrow keys. Refresh to restart.</p>
+    <h1>Snake Game</h1>
+    <div id="gameContainer">
+        <p id="score">Score: 0</p>
+        <canvas id="game" width="400" height="400"></canvas>
+        <button id="restartBtn">Restart</button>
+    </div>
+    <p>Use Arrow keys or WASD. Touch to control on mobile.<br>Made with ❤️ for GitHub Pages.</p>
+    <script src="snake.js"></script>
 </body>
 </html>
