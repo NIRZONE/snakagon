@@ -9,7 +9,7 @@ let food = {};
 let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
-let speed = 80;       // initial speed (ms)
+let speed = 200;       // initial speed (ms)
 let gameInterval = null;
 let lastTouchX = null, lastTouchY = null;
 
