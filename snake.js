@@ -1,6 +1,6 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const box = 20; // size of one block
+const box = 20;
 let direction = 'RIGHT';
 let running = false;
 let paused = false;
@@ -9,9 +9,8 @@ let food = {};
 let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
+let speed = 80;       // initial speed (ms)
 let gameInterval = null;
-let speed = 135; // ms per move
-
 let lastTouchX = null, lastTouchY = null;
 
 function initGame() {
@@ -20,12 +19,13 @@ function initGame() {
     running = true;
     paused = false;
     score = 0;
+    speed = 80;
     placeFood();
     scoreDisplay.textContent = "Score: 0";
     restartBtn.style.display = 'none';
     if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(gameLoop, speed);
-    draw(); // Draw initial state
+    draw();
 }
 
 function placeFood() {
@@ -65,10 +65,20 @@ function draw() {
     }
 }
 
+function adjustSpeed() {
+    // Example: speed up every 5 points, minimum 30ms interval
+    let newSpeed = Math.max(30, 80 - Math.floor(score / 5) * 10);
+    if (newSpeed !== speed) {
+        speed = newSpeed;
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, speed);
+    }
+}
+
 function gameLoop() {
     if (!running) return;
     if (paused) {
-        draw(); // Show paused overlay
+        draw();
         return;
     }
     let head = {...snake[0]};
@@ -92,6 +102,7 @@ function gameLoop() {
         score += 1;
         scoreDisplay.textContent = `Score: ${score}`;
         placeFood();
+        adjustSpeed(); // <--- Speed up here!
     } else {
         snake.pop();
     }
@@ -101,7 +112,6 @@ function gameLoop() {
 // Keyboard controls
 window.addEventListener('keydown', function(e) {
     if (!running) return;
-    // Prevent scrolling with arrow keys
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) e.preventDefault();
     if ((e.key === 'ArrowLeft' || e.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
     else if ((e.key === 'ArrowUp' || e.key === 'w') && direction !== 'DOWN') direction = 'UP';
@@ -109,11 +119,10 @@ window.addEventListener('keydown', function(e) {
     else if ((e.key === 'ArrowDown' || e.key === 's') && direction !== 'UP') direction = 'DOWN';
     else if (e.code === 'Space') {
         paused = !paused;
-        draw(); // Show/hide pause overlay immediately
+        draw();
     }
 });
 
-// Touch controls for mobile
 canvas.addEventListener('touchstart', function(e) {
     if (!running) return;
     const touch = e.touches[0];
