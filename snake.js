@@ -1,6 +1,6 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const box = 20; // SMALLER BLOCKS!
+const box = 20;
 let direction = 'RIGHT';
 let running = false;
 let paused = false;
@@ -9,7 +9,7 @@ let food = {};
 let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
-let speed = 200;       // initial speed (ms) -- SLOWER START!
+let speed = 80;       // initial speed (ms)
 let gameInterval = null;
 let lastTouchX = null, lastTouchY = null;
 
@@ -19,7 +19,7 @@ function initGame() {
     running = true;
     paused = false;
     score = 0;
-    speed = 200; // SLOWER START!
+    speed = 80;
     placeFood();
     scoreDisplay.textContent = "Score: 0";
     restartBtn.style.display = 'none';
@@ -66,8 +66,8 @@ function draw() {
 }
 
 function adjustSpeed() {
-    // Speed up every 5 points, minimum 60ms interval
-    let newSpeed = Math.max(60, 200 - Math.floor(score / 5) * 20);
+    // Example: speed up every 5 points, minimum 30ms interval
+    let newSpeed = Math.max(30, 80 - Math.floor(score / 5) * 10);
     if (newSpeed !== speed) {
         speed = newSpeed;
         clearInterval(gameInterval);
@@ -102,7 +102,7 @@ function gameLoop() {
         score += 1;
         scoreDisplay.textContent = `Score: ${score}`;
         placeFood();
-        adjustSpeed(); // Speed up as you score!
+        adjustSpeed(); // <--- Speed up here!
     } else {
         snake.pop();
     }
