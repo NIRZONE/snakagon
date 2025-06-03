@@ -10,7 +10,7 @@ let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
 let gameInterval = null;
-let speed = 30; // ms per move
+let speed = 135; // ms per move
 
 let lastTouchX = null, lastTouchY = null;
 
