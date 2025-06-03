@@ -1,6 +1,6 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const box = 30;
+const box = 60;
 let direction = 'RIGHT';
 let running = false;
 let paused = false;
