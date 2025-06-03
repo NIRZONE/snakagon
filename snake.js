@@ -80,9 +80,13 @@ function gameLoop() {
     });
 }
 
-// Keyboard controls
-document.addEventListener('keydown', e => {
+// Keyboard controls (attach to window and prevent arrow key scrolling)
+window.addEventListener('keydown', function(e) {
     if (!running) return;
+    // Prevent scrolling with arrow keys
+    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) {
+        e.preventDefault();
+    }
     if ((e.key === 'ArrowLeft' || e.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
     else if ((e.key === 'ArrowUp' || e.key === 'w') && direction !== 'DOWN') direction = 'UP';
     else if ((e.key === 'ArrowRight' || e.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
