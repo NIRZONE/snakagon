@@ -3,27 +3,29 @@ const ctx = canvas.getContext('2d');
 const box = 20; // size of one block
 let direction = 'RIGHT';
 let running = false;
+let paused = false;
 let snake = [];
 let food = {};
 let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
 let gameInterval = null;
+let speed = 80; // ms, lower is faster
 
-// For mobile controls
 let lastTouchX = null, lastTouchY = null;
 
-// Initialize game state
 function initGame() {
     snake = [{x: 8, y: 10}, {x: 7, y: 10}];
     direction = 'RIGHT';
     running = true;
+    paused = false;
     score = 0;
+    speed = 80; // set speed here
     placeFood();
     scoreDisplay.textContent = "Score: 0";
     restartBtn.style.display = 'none';
     if (gameInterval) clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 100);
+    gameInterval = setInterval(gameLoop, speed);
 }
 
 function placeFood() {
@@ -32,7 +34,6 @@ function placeFood() {
             x: Math.floor(Math.random() * (canvas.width / box)),
             y: Math.floor(Math.random() * (canvas.height / box))
         };
-        // Ensure food doesn't spawn on snake
         if (!snake.some(seg => seg.x === food.x && seg.y === food.y)) break;
     }
 }
@@ -42,15 +43,27 @@ function drawBlock(x, y, color) {
     ctx.fillRect(x * box, y * box, box - 2, box - 2);
 }
 
+function drawPaused() {
+    ctx.font = "40px Arial";
+    ctx.fillStyle = "#fff";
+    ctx.globalAlpha = 0.7;
+    ctx.fillRect(0, canvas.height/2-40, canvas.width, 60);
+    ctx.globalAlpha = 1.0;
+    ctx.fillStyle = "#222";
+    ctx.fillText("Paused", canvas.width/2-65, canvas.height/2);
+}
+
 function gameLoop() {
     if (!running) return;
-    // Move snake
+    if (paused) {
+        drawPaused();
+        return;
+    }
     let head = {...snake[0]};
     if (direction === 'LEFT') head.x--;
     else if (direction === 'RIGHT') head.x++;
     else if (direction === 'UP') head.y--;
     else if (direction === 'DOWN') head.y++;
-    // Check collision with walls
     if (
         head.x < 0 || head.x >= canvas.width / box ||
         head.y < 0 || head.y >= canvas.height / box ||
@@ -63,7 +76,6 @@ function gameLoop() {
         return;
     }
     snake.unshift(head);
-    // Eat food
     if (head.x === food.x && head.y === food.y) {
         score += 1;
         scoreDisplay.textContent = `Score: ${score}`;
@@ -71,7 +83,6 @@ function gameLoop() {
     } else {
         snake.pop();
     }
-    // Draw everything
     ctx.fillStyle = '#222';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawBlock(food.x, food.y, '#ff5252');
@@ -80,10 +91,9 @@ function gameLoop() {
     });
 }
 
-// Keyboard controls (attach to window and prevent arrow key scrolling)
+// Keyboard controls
 window.addEventListener('keydown', function(e) {
     if (!running) return;
-    // Prevent scrolling with arrow keys
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) {
         e.preventDefault();
     }
@@ -91,6 +101,10 @@ window.addEventListener('keydown', function(e) {
     else if ((e.key === 'ArrowUp' || e.key === 'w') && direction !== 'DOWN') direction = 'UP';
     else if ((e.key === 'ArrowRight' || e.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
     else if ((e.key === 'ArrowDown' || e.key === 's') && direction !== 'UP') direction = 'DOWN';
+    else if (e.code === 'Space') {
+        paused = !paused;
+        if (!paused) gameLoop();
+    }
 });
 
 // Touch controls for mobile
@@ -119,5 +133,4 @@ canvas.addEventListener('touchmove', function(e) {
 
 restartBtn.addEventListener('click', initGame);
 
-// Start game on load
 window.onload = initGame;
