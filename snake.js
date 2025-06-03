@@ -10,7 +10,7 @@ let score = 0;
 const scoreDisplay = document.getElementById('score');
 const restartBtn = document.getElementById('restartBtn');
 let gameInterval = null;
-let speed = 80; // ms, lower is faster
+let speed = 30; // ms per move
 
 let lastTouchX = null, lastTouchY = null;
 
@@ -20,12 +20,12 @@ function initGame() {
     running = true;
     paused = false;
     score = 0;
-    speed = 50; // set speed here
     placeFood();
     scoreDisplay.textContent = "Score: 0";
     restartBtn.style.display = 'none';
     if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(gameLoop, speed);
+    draw(); // Draw initial state
 }
 
 function placeFood() {
@@ -47,16 +47,28 @@ function drawPaused() {
     ctx.font = "40px Arial";
     ctx.fillStyle = "#fff";
     ctx.globalAlpha = 0.7;
-    ctx.fillRect(0, canvas.height/2-40, canvas.width, 60);
+    ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 60);
     ctx.globalAlpha = 1.0;
     ctx.fillStyle = "#222";
-    ctx.fillText("Paused", canvas.width/2-65, canvas.height/2);
+    ctx.fillText("Paused", canvas.width / 2 - 65, canvas.height / 2);
+}
+
+function draw() {
+    ctx.fillStyle = '#222';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawBlock(food.x, food.y, '#ff5252');
+    snake.forEach((seg, i) => {
+        drawBlock(seg.x, seg.y, i === 0 ? '#aaffaa' : '#68ef68');
+    });
+    if (paused) {
+        drawPaused();
+    }
 }
 
 function gameLoop() {
     if (!running) return;
     if (paused) {
-        drawPaused();
+        draw(); // Show paused overlay
         return;
     }
     let head = {...snake[0]};
@@ -83,27 +95,21 @@ function gameLoop() {
     } else {
         snake.pop();
     }
-    ctx.fillStyle = '#222';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawBlock(food.x, food.y, '#ff5252');
-    snake.forEach((seg, i) => {
-        drawBlock(seg.x, seg.y, i === 0 ? '#aaffaa' : '#68ef68');
-    });
+    draw();
 }
 
 // Keyboard controls
 window.addEventListener('keydown', function(e) {
     if (!running) return;
-    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) {
-        e.preventDefault();
-    }
+    // Prevent scrolling with arrow keys
+    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) e.preventDefault();
     if ((e.key === 'ArrowLeft' || e.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
     else if ((e.key === 'ArrowUp' || e.key === 'w') && direction !== 'DOWN') direction = 'UP';
     else if ((e.key === 'ArrowRight' || e.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
     else if ((e.key === 'ArrowDown' || e.key === 's') && direction !== 'UP') direction = 'DOWN';
     else if (e.code === 'Space') {
         paused = !paused;
-        if (!paused) gameLoop();
+        draw(); // Show/hide pause overlay immediately
     }
 });
 
